@@ -1,0 +1,4 @@
+#Mon Apr 01 17:22:41 EET 2024
+base.0=/Users/aymankamal/Desktop/flutter_projects/e_commerce_app_with_firebase/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
