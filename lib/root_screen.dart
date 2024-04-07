@@ -1,9 +1,11 @@
+import 'package:e_commerce_app_with_firebase/providers/cart_provider.dart';
 import 'package:e_commerce_app_with_firebase/screens/cart/cart_screen.dart';
 import 'package:e_commerce_app_with_firebase/screens/home/home_screen.dart';
 import 'package:e_commerce_app_with_firebase/screens/profile/profile_screen.dart';
 import 'package:e_commerce_app_with_firebase/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -33,6 +35,8 @@ class _RootScreen extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
+        final cartProvider = Provider.of<CartProvider>(context);
+
     return Scaffold(
       body: PageView(
         controller: controller,
@@ -49,20 +53,20 @@ class _RootScreen extends State<RootScreen> {
             controller!.jumpToPage(currentScreen);
           });
         },
-        destinations: const [
-          NavigationDestination(
+        destinations:  [
+          const NavigationDestination(
               icon: Icon(IconlyLight.home),
               selectedIcon: Icon(IconlyBold.home),
               label: 'Home'),
-          NavigationDestination(
+          const NavigationDestination(
               icon: Icon(IconlyLight.search),
               selectedIcon: Icon(IconlyBold.search),
               label: 'Search'),
           NavigationDestination(
-              icon: Badge(label: Text('5'),child: Icon(IconlyLight.bag_2)),
-              selectedIcon: Icon(IconlyBold.bag_2),
+              icon: Badge(label: Text(cartProvider.addCart.length.toString()),child: const Icon(IconlyLight.bag_2)),
+              selectedIcon: const Icon(IconlyBold.bag_2),
               label: 'Cart'),
-          NavigationDestination(
+          const NavigationDestination(
               icon: Icon(IconlyLight.profile),
               selectedIcon: Icon(IconlyBold.profile),
               label: 'Profile')

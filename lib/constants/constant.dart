@@ -25,12 +25,12 @@ class AppConstants {
     CategoryRoundModel(
       id: 'assets/images/mobiles.png',
       image: 'assets/images/mobiles.png',
-      name: 'Mobiles',
+      name: 'Phones',
     ),
     CategoryRoundModel(
       id:'assets/images/pc.png' ,
       image: 'assets/images/pc.png',
-      name: 'PC',
+      name: 'Laptops',
     ),
     CategoryRoundModel(
       id: 'assets/images/shoes.png',

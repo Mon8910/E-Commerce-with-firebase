@@ -1,7 +1,4 @@
 import 'package:e_commerce_app_with_firebase/constants/widgets/cart_empty.dart';
-import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
-import 'package:e_commerce_app_with_firebase/screens/cart/bottom_checkout.dart';
-import 'package:e_commerce_app_with_firebase/screens/cart/cart_widget.dart';
 import 'package:e_commerce_app_with_firebase/screens/profile/orderwidget.dart';
 import 'package:flutter/material.dart';
 

@@ -1,8 +1,11 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:e_commerce_app_with_firebase/app_services.dart/my_app_methods.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/cart_empty.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
+import 'package:e_commerce_app_with_firebase/providers/wishlist_provider.dart';
 import 'package:e_commerce_app_with_firebase/screens/product/product_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class WishListScreen extends StatelessWidget {
   const WishListScreen({super.key});
@@ -10,7 +13,8 @@ class WishListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isempty
+    final wishListProvider = Provider.of<WishListProvider>(context);
+    return wishListProvider.wishList.isEmpty
         ? const Scaffold(
             body: CartEmpty(
             image: 'assets/images/shopping_basket.png',
@@ -23,14 +27,23 @@ class WishListScreen extends StatelessWidget {
         : Scaffold(
             appBar: AppBar(
               elevation: 0.0,
-              title: const TitleText(label: 'Wishlist(5)'),
+              title: TitleText(
+                  label: 'Wishlist(${wishListProvider.wishList.length})'),
               leading: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Image.asset('assets/images/shopping_cart.png'),
               ),
               actions: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      MyAppMthods.showErrorWringDialog(
+                          isError: false,
+                          context: context,
+                          fun: () {
+                            wishListProvider.removeAll();
+                          },
+                          title: 'Do you want to remove all');
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: Colors.red,
@@ -38,10 +51,17 @@ class WishListScreen extends StatelessWidget {
               ],
             ),
             body: DynamicHeightGridView(
-              itemCount: 100,
+              itemCount: wishListProvider.wishList.length,
               crossAxisCount: 2,
               builder: (context, index) {
-                return const ProductWidget();
+                return ChangeNotifierProvider.value(
+                  value: wishListProvider.wishList.values.toList()[index],
+                  child: ProductWidget(
+                    productid: wishListProvider.wishList.values
+                        .toList()[index]
+                        .productId,
+                  ),
+                );
               },
             ));
   }

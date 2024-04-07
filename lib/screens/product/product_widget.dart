@@ -1,15 +1,28 @@
+import 'package:e_commerce_app_with_firebase/constants/widgets/heart_button.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/subtitle_text.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
+import 'package:e_commerce_app_with_firebase/providers/cart_provider.dart';
+import 'package:e_commerce_app_with_firebase/providers/product_provider.dart';
+import 'package:e_commerce_app_with_firebase/providers/view_recent_provider.dart';
 import 'package:e_commerce_app_with_firebase/screens/product/product_detsils_screen.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 class ProductWidget extends StatelessWidget {
-  const ProductWidget({super.key});
+  const ProductWidget({
+    super.key,
+    required this.productid,
+  });
+  final String productid;
 
   @override
   Widget build(BuildContext context) {
+    final products = Provider.of<ProductProvider>(context);
+    final getProducts = products.getProductModel(productid);
+    final cartProduct = Provider.of<CartProvider>(context);
+     final viewRecentProvider = Provider.of<ViewRecentProvider>(context);
+
     double height = MediaQuery.of(context).size.height;
     // double width = MediaQuery.of(context).size.width;
     return Padding(
@@ -18,16 +31,19 @@ class ProductWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const ProductDetailsScreen(),
+              builder: (context) => ProductDetailsScreen(
+                id: getProducts.productId,
+              ),
             ),
           );
+          viewRecentProvider.viewRecent(getProducts.productId);
         },
         child: Column(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FancyShimmerImage(
-                imageUrl: 'https://i.ibb.co/8r1Ny2n/20-Nike-Air-Force-1-07.png',
+                imageUrl: getProducts!.productImage,
                 height: height * .23,
                 width: double.infinity,
               ),
@@ -37,24 +53,31 @@ class ProductWidget extends StatelessWidget {
               children: [
                 Flexible(
                     child: TitleText(
-                  label: 'text' * 10,
+                  label: getProducts.productTitle,
                   maxLines: 2,
                 )),
                 Flexible(
-                    child: IconButton(
-                        onPressed: () {}, icon: const Icon(IconlyLight.heart)))
+                  child: HeartButtonWidget(productId: getProducts.productId,)
+                )
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Flexible(
-                  child: SubtitleText(label: '120\$'),
+                Flexible(
+                  child: SubtitleText(label: getProducts.productPrice),
                 ),
                 Flexible(
                   child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add_shopping_cart_outlined),
+                    onPressed: () {
+                      if (cartProduct.checkCartg(getProducts.productId)) {
+                        return;
+                      }
+                      cartProduct.addCartModel(getProducts.productId);
+                    },
+                    icon: Icon(cartProduct.checkCartg(getProducts.productId)
+                        ? Icons.check
+                        : Icons.add_shopping_cart_outlined),
                   ),
                 ),
               ],

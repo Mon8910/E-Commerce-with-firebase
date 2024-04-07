@@ -1,8 +1,10 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/cart_empty.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
+import 'package:e_commerce_app_with_firebase/providers/view_recent_provider.dart';
 import 'package:e_commerce_app_with_firebase/screens/product/product_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ViewRecentScreen extends StatelessWidget {
   const ViewRecentScreen({super.key});
@@ -10,6 +12,8 @@ class ViewRecentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewRecentProvider = Provider.of<ViewRecentProvider>(context);
+
     return isempty
         ? const Scaffold(
             body: CartEmpty(
@@ -38,10 +42,17 @@ class ViewRecentScreen extends StatelessWidget {
               ],
             ),
             body: DynamicHeightGridView(
-              itemCount: 100,
+              itemCount: viewRecentProvider.getViewRecent.length,
               crossAxisCount: 2,
               builder: (context, index) {
-                return const ProductWidget();
+                return ChangeNotifierProvider.value(
+                    value:
+                        viewRecentProvider.getViewRecent.values.toList()[index],
+                    child: ProductWidget(
+                      productid: viewRecentProvider.getViewRecent.values
+                          .toList()[index]
+                          .productId,
+                    ));
               },
             ));
   }

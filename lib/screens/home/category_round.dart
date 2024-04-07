@@ -12,20 +12,27 @@ class CategoryRound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Image.asset(
-          image,
-          width: 50,
-          height: 50,
-        ),
-        const SizedBox(height: 15,),
-        SubtitleText(
-          label: name,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-        ),
-      ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('searchname', arguments: name);
+      },
+      child: Column(
+        children: [
+          Image.asset(
+            image,
+            width: 50,
+            height: 50,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          SubtitleText(
+            label: name,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ],
+      ),
     );
   }
 }

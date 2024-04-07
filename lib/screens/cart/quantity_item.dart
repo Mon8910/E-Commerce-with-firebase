@@ -1,11 +1,17 @@
 import 'package:e_commerce_app_with_firebase/constants/widgets/subtitle_text.dart';
+import 'package:e_commerce_app_with_firebase/model/cart_model.dart';
+import 'package:e_commerce_app_with_firebase/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class QuantityItem extends StatelessWidget {
-  const QuantityItem({super.key});
+  const QuantityItem({super.key, required this.cartModel,});
+  final CartModel cartModel;
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider=Provider.of<CartProvider>(context);
+    
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -30,7 +36,10 @@ class QuantityItem extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Center(
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        cartProvider.updateCart(cartModel.productId,index+1);
+                        Navigator.of(context).pop();
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: SubtitleText(label: '${index + 1}'),

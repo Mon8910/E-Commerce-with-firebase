@@ -1,34 +1,43 @@
 import 'package:e_commerce_app_with_firebase/constants/widgets/subtitle_text.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
+import 'package:e_commerce_app_with_firebase/providers/cart_provider.dart';
+import 'package:e_commerce_app_with_firebase/providers/product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BottomCheckout extends StatelessWidget {
   const BottomCheckout({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+    final productProvider = Provider.of<ProductProvider>(context);
     return SizedBox(
-      height: kBottomNavigationBarHeight + 0,
+      height: kBottomNavigationBarHeight + 10,
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+        ),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              const Flexible(
+              Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FittedBox(
                         child: TitleText(
-                      label: "Total (6 products/6 items)",
+                      label:
+                          "Total (${cartProvider.addCart.length} products/${cartProvider.totalQuantity()} items)",
                       fontSize: 14,
                     )),
-                    SubtitleText(
-                      label: '123\$',
-                      color: Colors.blue,
+                    FittedBox(
+                      child: SubtitleText(
+                        label:
+                            '${cartProvider.getTotal(productProvider: productProvider)}\$',
+                        color: Colors.blue,
+                      ),
                     )
                   ],
                 ),
