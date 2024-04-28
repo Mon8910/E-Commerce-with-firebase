@@ -15,7 +15,7 @@ class CartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartModel>(context);
     final productProvider = Provider.of<ProductProvider>(context);
-    final removeCart=Provider.of<CartProvider>(context);
+    final cartProviders = Provider.of<CartProvider>(context);
     final getallProducts =
         productProvider.getProductModel(cartProvider.productId);
 
@@ -56,8 +56,14 @@ class CartWidget extends StatelessWidget {
                               Column(
                                 children: [
                                   IconButton(
-                                    onPressed: () {
-                                      removeCart.getDelete(productId: cartProvider.productId);
+                                    onPressed: () async {
+                                      await cartProviders
+                                          .clearCartFromItemFireBase(
+                                        productId: cartProvider.productId,
+                                        quntity: cartProvider.quantity,
+                                        cartId: cartProvider.cartId,
+                                      );
+                                      // removeCart.getDelete(productId: cartProvider.productId);
                                     },
                                     icon: const Icon(
                                       Icons.clear,

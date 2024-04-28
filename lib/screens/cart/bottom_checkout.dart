@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BottomCheckout extends StatelessWidget {
-  const BottomCheckout({super.key});
+  const BottomCheckout({
+    super.key,
+    required this.function,
+  });
+  final Function function;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +47,12 @@ class BottomCheckout extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              ElevatedButton(onPressed: () {}, child: const Text('Check out'))
+              ElevatedButton(
+                onPressed: () async {
+                  await function();
+                },
+                child: const Text('Check out'),
+              )
             ],
           ),
         ),

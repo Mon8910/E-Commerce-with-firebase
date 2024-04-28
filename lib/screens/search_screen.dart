@@ -38,72 +38,91 @@ class _SearchScreenState extends State<SearchScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          appBar: AppBar(
-            elevation: 0.0,
-            title: TitleText(label: productCategorys ?? 'Search'),
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/images/shopping_cart.png'),
-            ),
+        appBar: AppBar(
+          elevation: 0.0,
+          title: TitleText(label: productCategorys ?? 'Search'),
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/images/shopping_cart.png'),
           ),
-          body: products.isEmpty
-              ? const Center(
-                  child: TitleText(label: 'No Product find'),
-                )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: TextField(
-                        controller: textEditingController,
-                        decoration: InputDecoration(
-                          filled: true,
-                          prefixIcon: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.search),
+        ),
+        body: products.isEmpty
+            ? const Center(
+                child: TitleText(label: 'No Product find'),
+              )
+            : StreamBuilder<List<ProductModel>>(
+                stream: product.streamProduct(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: TitleText(label: snapshot.error.toString()));
+                  } else if (snapshot.data == null) {
+                    return const Center(
+                      child: TitleText(label: 'No data found'),
+                    );
+                  }
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: TextField(
+                          controller: textEditingController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            prefixIcon: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.search),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                textEditingController.clear();
+                                FocusScope.of(context).unfocus();
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
                           ),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              textEditingController.clear();
-                              FocusScope.of(context).unfocus();
-                            },
-                            icon: const Icon(Icons.clear),
-                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              productSearch = product.getSearch(
+                                  textEditingController.text, products);
+                            });
+                          },
+                          onSubmitted: (value) {},
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            productSearch =
-                                product.getSearch(textEditingController.text,products);
-                          });
-                        },
-                        onSubmitted: (value) {},
                       ),
-                    ),
-                    if (textEditingController.text.isNotEmpty &&
-                        productSearch.isEmpty) ...[
-                      const Center(
-                        child: TitleText(label: 'no prdoct find'),
+                      if (textEditingController.text.isNotEmpty &&
+                          productSearch.isEmpty) ...[
+                        const Center(
+                          child: TitleText(label: 'no prdoct find'),
+                        )
+                      ],
+                      Expanded(
+                        child: DynamicHeightGridView(
+                          itemCount: textEditingController.text.isNotEmpty
+                              ? productSearch.length
+                              : products.length,
+                          crossAxisCount: 2,
+                          builder: (context, index) {
+                            return ChangeNotifierProvider.value(
+                                value: products[index],
+                                child: ProductWidget(
+                                  productid:
+                                      textEditingController.text.isNotEmpty
+                                          ? productSearch[index].productId
+                                          : products[index].productId,
+                                ));
+                          },
+                        ),
                       )
                     ],
-                    Expanded(
-                      child: DynamicHeightGridView(
-                        itemCount: textEditingController.text.isNotEmpty
-                            ? productSearch.length
-                            : products.length,
-                        crossAxisCount: 2,
-                        builder: (context, index) {
-                          return ChangeNotifierProvider.value(
-                              value: products[index],
-                              child: ProductWidget(
-                                productid: textEditingController.text.isNotEmpty
-                                    ? productSearch[index].productId
-                                    : products[index].productId,
-                              ));
-                        },
-                      ),
-                    )
-                  ],
-                )),
+                  );
+                },
+              ),
+      ),
     );
   }
 }

@@ -17,7 +17,7 @@ class WishListScreen extends StatelessWidget {
     return wishListProvider.wishList.isEmpty
         ? const Scaffold(
             body: CartEmpty(
-            image: 'assets/images/shopping_basket.png',
+            image: 'assets/images/bag_wish.png',
             title: 'Whoops',
             subTitle: 'Your Wishlist is empty',
             details:
@@ -39,8 +39,8 @@ class WishListScreen extends StatelessWidget {
                       MyAppMthods.showErrorWringDialog(
                           isError: false,
                           context: context,
-                          fun: () {
-                            wishListProvider.removeAll();
+                          fun: () async {
+                            await wishListProvider.removeItemFromFirebase();
                           },
                           title: 'Do you want to remove all');
                     },

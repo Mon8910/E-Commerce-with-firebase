@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 class PickImageWidget extends StatelessWidget {
   const PickImageWidget(
-      {super.key, required this.pickimage, required this.fun});
+      {super.key, required this.pickimage, required this.fun,});
   final XFile? pickimage;
   final Function fun;
 

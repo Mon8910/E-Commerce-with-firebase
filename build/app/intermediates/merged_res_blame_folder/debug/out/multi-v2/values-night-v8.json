@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.e_commerce_app_with_firebase.app-mergeDebugResources-20:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.e_commerce_app_with_firebase.app-mergeDebugResources-26:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "/Users/aymankamal/Desktop/flutter_projects/e_commerce_app_with_firebase/android/app/src/main/res/values-night/styles.xml",

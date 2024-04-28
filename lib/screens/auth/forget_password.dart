@@ -93,7 +93,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               // Move focus to the next field when the "next" button is pressed
                             },
                           ),
-                          SizedBox(height: 15,),
+                          const SizedBox(height: 15,),
                           SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

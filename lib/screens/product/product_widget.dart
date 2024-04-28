@@ -1,3 +1,4 @@
+import 'package:e_commerce_app_with_firebase/app_services.dart/my_app_methods.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/heart_button.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/subtitle_text.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/title_text.dart';
@@ -21,7 +22,7 @@ class ProductWidget extends StatelessWidget {
     final products = Provider.of<ProductProvider>(context);
     final getProducts = products.getProductModel(productid);
     final cartProduct = Provider.of<CartProvider>(context);
-     final viewRecentProvider = Provider.of<ViewRecentProvider>(context);
+    final viewRecentProvider = Provider.of<ViewRecentProvider>(context);
 
     double height = MediaQuery.of(context).size.height;
     // double width = MediaQuery.of(context).size.width;
@@ -57,8 +58,9 @@ class ProductWidget extends StatelessWidget {
                   maxLines: 2,
                 )),
                 Flexible(
-                  child: HeartButtonWidget(productId: getProducts.productId,)
-                )
+                    child: HeartButtonWidget(
+                  productId: getProducts.productId,
+                ))
               ],
             ),
             Row(
@@ -69,11 +71,24 @@ class ProductWidget extends StatelessWidget {
                 ),
                 Flexible(
                   child: IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (cartProduct.checkCartg(getProducts.productId)) {
                         return;
                       }
-                      cartProduct.addCartModel(getProducts.productId);
+                      // cartProduct.addCartModel(getProducts.productId);
+                      try {
+                        await cartProduct.addToCartFireBase(
+                            productId: getProducts.productId,
+                            quntity: 1,
+                            context: context);
+                      } catch (e) {
+                        // ignore: use_build_context_synchronously
+                        MyAppMthods.showErrorWringDialog(
+                          context: context,
+                          fun: () {},
+                          title: e.toString(),
+                        );
+                      }
                     },
                     icon: Icon(cartProduct.checkCartg(getProducts.productId)
                         ? Icons.check

@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:e_commerce_app_with_firebase/providers/cart_provider.dart';
+import 'package:e_commerce_app_with_firebase/providers/product_provider.dart';
+import 'package:e_commerce_app_with_firebase/providers/wishlist_provider.dart';
 import 'package:e_commerce_app_with_firebase/screens/cart/cart_screen.dart';
 import 'package:e_commerce_app_with_firebase/screens/home/home_screen.dart';
 import 'package:e_commerce_app_with_firebase/screens/profile/profile_screen.dart';
@@ -18,12 +22,13 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreen extends State<RootScreen> {
   PageController? controller;
+  bool isLoading = true;
   int currentScreen = 0;
   List<Widget> pages = [
     const HomeScreen(),
     const SearchScreen(),
     const CartScreen(),
-    const ProfileScreen()
+    const ProfileScreen(),
   ];
   @override
   void initState() {
@@ -33,10 +38,40 @@ class _RootScreen extends State<RootScreen> {
     super.initState();
   }
 
+  Future<void> fetchDB() async {
+    final product = Provider.of<ProductProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final wishListProvider =
+        Provider.of<WishListProvider>(context, listen: false);
+
+    try {
+      await Future.wait({
+        product.fetchDatat(),
+      });
+      await Future.wait({
+        cartProvider.fetchDataFromFirebase(),
+        wishListProvider.fetchDtatFromWishListScreen()
+      });
+      return;
+    } catch (error) {
+      log(error.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (isLoading) {
+      fetchDB();
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-        final cartProvider = Provider.of<CartProvider>(context);
-
     return Scaffold(
       body: PageView(
         controller: controller,
@@ -53,7 +88,7 @@ class _RootScreen extends State<RootScreen> {
             controller!.jumpToPage(currentScreen);
           });
         },
-        destinations:  [
+        destinations: [
           const NavigationDestination(
               icon: Icon(IconlyLight.home),
               selectedIcon: Icon(IconlyBold.home),
@@ -63,7 +98,15 @@ class _RootScreen extends State<RootScreen> {
               selectedIcon: Icon(IconlyBold.search),
               label: 'Search'),
           NavigationDestination(
-              icon: Badge(label: Text(cartProvider.addCart.length.toString()),child: const Icon(IconlyLight.bag_2)),
+              icon: Consumer<CartProvider>(
+                builder: (context, cartProvider, child) {
+                  return Badge(
+                    backgroundColor: Colors.blue,
+                    label: Text(cartProvider.addCart.length.toString()),
+                    child: const Icon(IconlyLight.bag_2),
+                  );
+                },
+              ),
               selectedIcon: const Icon(IconlyBold.bag_2),
               label: 'Cart'),
           const NavigationDestination(

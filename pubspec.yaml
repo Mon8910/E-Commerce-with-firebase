@@ -45,6 +45,12 @@ dependencies:
   ionicons: ^0.2.2
   image_picker: ^1.0.7
   uuid: ^4.2.2
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  google_sign_in: ^6.1.6
+  firebase_storage: ^11.6.0
+  fluttertoast: ^8.2.5
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +100,7 @@ flutter:
   - assets/images/warning.png
   - assets/images/order.png
   - assets/images/forgot_password.jpg
+  - assets/images/bag_wish.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

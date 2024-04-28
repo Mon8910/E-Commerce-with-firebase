@@ -1,11 +1,17 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app_with_firebase/app_services.dart/my_app_methods.dart';
 import 'package:e_commerce_app_with_firebase/constants/my_validators.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/app_name_text.dart';
 import 'package:e_commerce_app_with_firebase/constants/widgets/subtitle_text.dart';
 import 'package:e_commerce_app_with_firebase/screens/auth/pick_image_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -21,7 +27,7 @@ class _SignUpScreen extends State<SignUpScreen> {
   TextEditingController email = TextEditingController();
   TextEditingController user = TextEditingController();
   TextEditingController repeatPassword = TextEditingController();
-
+  bool isLoading = false;
   TextEditingController password = TextEditingController();
   FocusNode emailFoucs = FocusNode();
   FocusNode repeatPasswordFoucs = FocusNode();
@@ -29,6 +35,8 @@ class _SignUpScreen extends State<SignUpScreen> {
   FocusNode passwordFoucs = FocusNode();
   bool showPassword = true;
   XFile? pickedImage;
+  final auth = FirebaseAuth.instance;
+  String? imageUrl;
 
   pickimage() {
     final ImagePicker picker = ImagePicker();
@@ -39,7 +47,7 @@ class _SignUpScreen extends State<SignUpScreen> {
           setState(() {});
         },
         funGallery: () async {
-          pickedImage = await picker.pickImage(source: ImageSource.camera);
+          pickedImage = await picker.pickImage(source: ImageSource.gallery);
           setState(() {});
         },
         funRemove: () {
@@ -62,11 +70,68 @@ class _SignUpScreen extends State<SignUpScreen> {
     super.dispose();
   }
 
-  login() async {
+  SignUp() async {
     final isValid = formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
+    if (pickedImage == null) {
+      MyAppMthods.showErrorWringDialog(
+          context: context, fun: () {}, title: 'Make sure to pick image');
+      return;
+    }
     if (isValid) {
-      print('object');
+      formKey.currentState!.save();
+
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('userImage')
+            .child('${email.text.trim()}.jpg');
+        await ref.putFile(
+          File(pickedImage!.path),
+        );
+        imageUrl = await ref.getDownloadURL();
+        await auth.createUserWithEmailAndPassword(
+          email: email.text.trim(),
+          password: password.text.trim(),
+        );
+        User? users = auth.currentUser;
+        final uid = users!.uid;
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'userId': uid,
+          'userImage': imageUrl,
+          'userName': user.text,
+          'userEmail': email.text,
+          'createdAt': Timestamp.now(),
+          'userWish': [],
+          'userCart': []
+        });
+        Fluttertoast.showToast(
+          msg: "the email has been created ",
+          toastLength: Toast.LENGTH_SHORT,
+          textColor: Colors.white,
+        );
+      } on FirebaseAuthException catch (error) {
+        // ignore: use_build_context_synchronously
+        MyAppMthods.showErrorWringDialog(
+          context: context,
+          fun: () {},
+          title: 'an error has been occured ${error.message}',
+        );
+      } catch (error) {
+        // ignore: use_build_context_synchronously
+        MyAppMthods.showErrorWringDialog(
+          context: context,
+          fun: () {},
+          title: 'an error has been occured$error',
+        );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -203,9 +268,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                     validator: (value) {
                       return MyValidators.passwordValidator(value);
                     },
-                    onFieldSubmitted: (value) {
-                      login();
-                    },
+                    onFieldSubmitted: (value) {},
                   ),
                   const SizedBox(
                     height: 20,
@@ -213,7 +276,9 @@ class _SignUpScreen extends State<SignUpScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        SignUp();
+                      },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.lightBlue),
                       child: const SubtitleText(
